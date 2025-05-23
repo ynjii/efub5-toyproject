@@ -1,5 +1,6 @@
-import styled from 'styled-components';
-import { Link } from 'react-router-dom';
+import styled from "styled-components";
+import { Link } from "react-router-dom";
+import logo from "../assets/logo.png";
 
 const Nav = styled.nav`
   width: 260px;
@@ -27,8 +28,8 @@ const NavItem = styled.li`
   gap: 1.2rem;
   margin-bottom: 1.5rem;
   font-size: 1.25rem;
-  font-weight: ${({ active }) => (active ? 'bold' : 'normal')};
-  color: ${({ active }) => (active ? '#fff' : '#d9d9d9')};
+  font-weight: ${({ active }) => (active ? "bold" : "normal")};
+  color: ${({ active }) => (active ? "#fff" : "#d9d9d9")};
 `;
 
 const PostButton = styled.button`
@@ -86,29 +87,61 @@ function Navigation() {
   return (
     <Nav>
       <div>
-        <div style={{ fontSize: '2rem', margin: '0 0 2rem 1.5rem' }}>✖️</div>
+        <div style={{ margin: "0 0 2rem 1.5rem" }}>
+          <img src={logo} alt="logo" style={{ width: 75, height: 75 }} />
+        </div>
         <NavList>
-          <NavItem active><span>🏠</span><Link to="/" style={{ color: '#fff', fontWeight: 'bold' }}>Home</Link></NavItem>
-          <NavItem><span>🔍</span>Explore</NavItem>
-          <NavItem><span>🔔</span>Notifications</NavItem>
-          <NavItem><span>✉️</span>Messages</NavItem>
-          <NavItem><span>📝</span>Grok</NavItem>
-          <NavItem><span>📋</span>Lists</NavItem>
-          <NavItem><span>🔖</span>Bookmarks</NavItem>
-          <NavItem><span>👥</span>Communities</NavItem>
-          <NavItem><span>❌</span>Premium</NavItem>
-          <NavItem><span>👤</span><Link to="/profile" style={{ color: '#fff' }}>Profile</Link></NavItem>
-          <NavItem><span>😊</span>More</NavItem>
+          <NavItem active>
+            <span>🏠</span>
+            <Link to="/" style={{ color: "#fff", fontWeight: "bold" }}>
+              Home
+            </Link>
+          </NavItem>
+          <NavItem>
+            <span>🔍</span>Explore
+          </NavItem>
+          <NavItem>
+            <span>🔔</span>Notifications
+          </NavItem>
+          <NavItem>
+            <span>✉️</span>Messages
+          </NavItem>
+          <NavItem>
+            <span>📝</span>Grok
+          </NavItem>
+          <NavItem>
+            <span>📋</span>Lists
+          </NavItem>
+          <NavItem>
+            <span>🔖</span>Bookmarks
+          </NavItem>
+          <NavItem>
+            <span>👥</span>Communities
+          </NavItem>
+          <NavItem>
+            <span>❌</span>Premium
+          </NavItem>
+          <NavItem>
+            <span>👤</span>
+            <Link to="/profile" style={{ color: "#fff" }}>
+              Profile
+            </Link>
+          </NavItem>
+          <NavItem>
+            <span>😊</span>More
+          </NavItem>
         </NavList>
         <PostButton>Post</PostButton>
       </div>
       <UserBox>
         <Avatar>🧑‍💻</Avatar>
         <UserInfo>
-          <UserName>송지민</UserName>
-          <UserId>@efub_4th_toy</UserId>
+          <UserName>김윤지</UserName>
+          <UserId>@efub_5th_toy</UserId>
         </UserInfo>
-        <span style={{ marginLeft: 'auto', color: '#888', fontSize: '1.5rem' }}>...</span>
+        <span style={{ marginLeft: "auto", color: "#888", fontSize: "1.5rem" }}>
+          ...
+        </span>
       </UserBox>
     </Nav>
   );

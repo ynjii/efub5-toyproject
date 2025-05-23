@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import TweetCard from '../components/TweetCard';
 
-const NAV_WIDTH = 260;
+const NAV_WIDTH = 300;
 const RIGHTBAR_WIDTH = 350;
 
 const Layout = styled.div`
@@ -11,16 +11,17 @@ const Layout = styled.div`
 `;
 
 const Main = styled.main`
-  max-width: 600px;
-  margin: 0 auto;
+  width: 1250px;
   min-height: 100vh;
-  position: relative;
+  position: center;
   z-index: 1;
-  margin-left: ${NAV_WIDTH + 20}px;
-  margin-right: ${RIGHTBAR_WIDTH + 20}px;
+  margin-left: ${NAV_WIDTH}px;
+  margin-right: ${RIGHTBAR_WIDTH}px;
   border-left: 1px solid #222;
   border-right: 1px solid #222;
   background: #000;
+  margin-top: 0;
+  margin-bottom: 0;
 `;
 
 const Header = styled.div`
@@ -157,7 +158,7 @@ That’s just on new sites and expansions, not counting operations costs, which 
     username: 'elonmusk',
     avatar: 'https://abs.twimg.com/sticky/default_profile_images/default_profile_400x400.png',
     content: `What Earth looks like in radio frequency from the @Starlink direct to phone satellites`,
-    image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/Australia_satellite_image.jpg/320px-Australia_satellite_image.jpg',
+    image: 'https://news.samsungdisplay.com/wp-content/uploads/2018/08/8.jpg',
     stats: { replies: '4.7K', retweets: '8.2K', likes: '98K', views: '29M' }
   }
 ];
@@ -183,9 +184,7 @@ function HomePage() {
         <TweetForm>
           <TweetInputRow>
             <Avatar />
-            <div style={{ flex: 1 }}>
-              <div style={{ fontWeight: 'bold', marginBottom: 4 }}>글 작성 기능 구현해주세요 (POST)</div>
-              <div style={{ color: '#1da1f2', fontSize: 14, marginBottom: 8 }}>Everyone can reply</div>
+            <div style={{ flex: 30 }}>
               <TweetTextarea placeholder="무슨 일이 일어나고 있나요?" disabled />
             </div>
           </TweetInputRow>

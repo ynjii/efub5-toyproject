@@ -1,6 +1,8 @@
 import styled from 'styled-components';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // 추가
 
-const NAV_WIDTH = 260;
+const NAV_WIDTH = 300;
 const RIGHTBAR_WIDTH = 350;
 
 const Layout = styled.div`
@@ -10,47 +12,296 @@ const Layout = styled.div`
 `;
 
 const Main = styled.main`
-  max-width: 600px;
-  margin: 0 auto;
+  width: 1250px;
   min-height: 100vh;
-  position: relative;
-  z-index: 1;
-  margin-left: ${NAV_WIDTH + 20}px;
-  margin-right: ${RIGHTBAR_WIDTH + 20}px;
+  margin-left: ${NAV_WIDTH}px;
+  margin-right: ${RIGHTBAR_WIDTH}px;
   border-left: 1px solid #222;
   border-right: 1px solid #222;
   background: #000;
 `;
 
+const Header = styled.div`
+  padding: 1.2rem 1.5rem 0.7rem 1.5rem;
+  font-size: 1.3rem;
+  font-weight: bold;
+  border-bottom: 1px solid #222;
+  background: #000;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+`;
+
+const TweetCard = styled.div`
+  position: relative;
+  padding: 1.5rem 1.5rem 1rem 1.5rem;
+  border-bottom: 1px solid #222;
+  background: #000;
+`;
+
+const Avatar = styled.img`
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #222;
+  margin-right: 1rem;
+`;
+
+const AuthorRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  font-weight: bold;
+  font-size: 1.1rem;
+`;
+
+const Username = styled.span`
+  color: #888;
+  font-size: 1rem;
+  font-weight: 400;
+`;
+
+const MoreBtn = styled.button`
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  background: transparent;
+  border: none;
+  color: #888;
+  font-size: 1.5rem;
+  cursor: pointer;
+  z-index: 2;
+`;
+
+const TweetContent = styled.div`
+  margin: 0.7rem 0 0.5rem 0;
+  font-size: 1.15rem;
+`;
+
+const TweetMeta = styled.div`
+  color: #888;
+  font-size: 0.95rem;
+  margin-bottom: 0.7rem;
+`;
+
+const TweetActions = styled.div`
+  display: flex;
+  gap: 2.5rem;
+  color: #888;
+  font-size: 1.2rem;
+  margin: 1rem 0 0.5rem 0;
+`;
+
+const ReplyBox = styled.div`
+  display: flex;
+  align-items: flex-start;
+  padding: 1.2rem 1.5rem;
+  border-bottom: 1px solid #222;
+  background: #000;
+`;
+
+const ReplyInput = styled.input`
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 1.05rem;
+  outline: none;
+  margin-left: 1rem;
+`;
+
+const ReplyButton = styled.button`
+  background: #1da1f2;
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  padding: 0.5rem 1.2rem;
+  font-weight: bold;
+  font-size: 1rem;
+  margin-left: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+  &:hover {
+    background: #1a8cd8;
+  }
+`;
+
+const RightBar = styled.aside`
+  width: ${RIGHTBAR_WIDTH}px;
+  padding: 1.5rem 1rem 0 1rem;
+  background: #000;
+  border-left: 1px solid #222;
+  min-height: 100vh;
+  position: fixed;
+  right: 0;
+  top: 0;
+  z-index: 2;
+`;
+
+const SearchInput = styled.input`
+  width: 100%;
+  padding: 0.7rem 1rem;
+  border-radius: 999px;
+  border: none;
+  background: #222;
+  color: #fff;
+  margin-bottom: 1.5rem;
+  font-size: 1rem;
+`;
+
+const Card = styled.div`
+  background: #16181c;
+  border-radius: 1.2rem;
+  padding: 1.2rem;
+  margin-bottom: 1.2rem;
+`;
+
+const CardTitle = styled.div`
+  font-weight: bold;
+  margin-bottom: 0.7rem;
+`;
+
+const TrendItem = styled.div`
+  margin-bottom: 0.7rem;
+  font-size: 0.98rem;
+`;
+
+const ModalBg = styled.div`
+  position: fixed;
+  left: 0; top: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 1000;
+  display: flex; align-items: center; justify-content: center;
+`;
+
+const Modal = styled.div`
+  background: #111;
+  color: #fff;
+  border-radius: 1.2rem;
+  padding: 2rem 2.5rem;
+  min-width: 320px;
+  text-align: center;
+`;
+
+const ModalBtn = styled.button`
+  width: 100%;
+  margin-top: 1.2rem;
+  padding: 0.8rem 0;
+  border-radius: 999px;
+  border: none;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  background: ${({ red }) => (red ? '#f4212e' : '#222')};
+  color: ${({ red }) => (red ? '#fff' : '#fff')};
+  &:hover { opacity: 0.9; }
+`;
+
 const dummyTweet = {
   id: 1,
-  author: 'Elon Musk',
-  username: 'elonmusk',
+  author: '김윤지',
+  username: 'efub_5th_toy',
   avatar: 'https://abs.twimg.com/sticky/default_profile_images/default_profile_400x400.png',
-  content: '상세 트윗 내용입니다.',
+  content: '내 트윗 1',
+  date: '12:00 PM · May 23, 2025',
 };
 
-const dummyReplies = [
-  { id: 1, author: '김철수', content: '댓글 1' },
-  { id: 2, author: '이영희', content: '댓글 2' },
+const dummyTrends = [
+  { title: '싱크로유', posts: '12.7K posts' },
+  { title: '#스트레이키즈', posts: '223K posts' },
+  { title: '티켓 양도', posts: '3,871 posts' },
+  { title: '#윤두준', posts: '8,094 posts' },
+  { title: '도경수 노래', posts: '' },
+  { title: '#아미들_남준이에게_돌아갈_걸심', posts: '111K posts' },
+  { title: '#규현디엠', posts: '' }
 ];
 
 function TweetDetailPage() {
+  const [showModal, setShowModal] = useState(false);
+  const navigate = useNavigate(); // 추가
+
   return (
     <Layout>
       <Main>
-        <div style={{ padding: '2rem' }}>
-          <div style={{ fontWeight: 'bold', fontSize: '1.2rem' }}>{dummyTweet.author} @{dummyTweet.username}</div>
-          <div style={{ margin: '1rem 0' }}>{dummyTweet.content}</div>
-          <hr style={{ border: '1px solid #222' }} />
-          <h3 style={{ margin: '1.5rem 0 1rem 0' }}>댓글</h3>
-          {dummyReplies.map(reply => (
-            <div key={reply.id} style={{ marginLeft: '1rem', marginBottom: '0.5rem' }}>
-              <b>{reply.author}</b>: {reply.content}
-            </div>
-          ))}
-        </div>
+        <Header>
+          <button
+            style={{
+              background: 'none',
+              border: 'none',
+              color: '#fff',
+              cursor: 'pointer',
+              fontSize: 22,
+              padding: 0,
+              marginRight: 10,
+            }}
+            onClick={() => navigate('/')}
+            aria-label="홈으로"
+          >
+            ←
+          </button>
+          Post
+        </Header>
+        <TweetCard>
+          <Avatar src={dummyTweet.avatar} alt="avatar" />
+          <AuthorRow>
+            {dummyTweet.author}
+            <Username>@{dummyTweet.username}</Username>
+          </AuthorRow>
+          <MoreBtn onClick={() => setShowModal(true)} aria-label="더보기">...</MoreBtn>
+          <TweetContent>{dummyTweet.content}</TweetContent>
+          <div style={{ color: '#1da1f2', fontSize: 14, cursor: 'pointer', marginBottom: 2 }}>Translate post</div>
+          <TweetMeta>{dummyTweet.date}</TweetMeta>
+          <div style={{ borderTop: '1px solid #222', margin: '10px 0 0 0', paddingTop: 8, color: '#888', fontSize: 14 }}>
+            <span>📊 View post engagements</span>
+          </div>
+          <TweetActions>
+            <span>💬</span>
+            <span>🔁</span>
+            <span>❤️</span>
+            <span>🔖</span>
+            <span>↗️</span>
+          </TweetActions>
+        </TweetCard>
+        <ReplyBox>
+          <Avatar src={dummyTweet.avatar} alt="avatar" />
+          <ReplyInput placeholder="Post your reply" disabled />
+          <ReplyButton disabled>Reply</ReplyButton>
+        </ReplyBox>
       </Main>
+      <RightBar>
+        <SearchInput placeholder="Search" disabled />
+        <Card>
+          <CardTitle>Subscribe to Premium</CardTitle>
+          <div style={{ fontSize: 15, marginBottom: 10 }}>
+            Subscribe to unlock new features and if eligible, receive a share of ads revenue.
+          </div>
+          <ModalBtn style={{ width: '100%' }}>Subscribe</ModalBtn>
+        </Card>
+        <Card>
+          <CardTitle>Trends for you</CardTitle>
+          {dummyTrends.map((trend, idx) => (
+            <TrendItem key={idx}>
+              <div style={{ fontWeight: 500 }}>{trend.title}</div>
+              <div style={{ color: '#888', fontSize: 13 }}>{trend.posts}</div>
+            </TrendItem>
+          ))}
+        </Card>
+      </RightBar>
+      {showModal && (
+        <ModalBg onClick={() => setShowModal(false)}>
+          <Modal onClick={e => e.stopPropagation()}>
+            <div style={{ fontWeight: 'bold', fontSize: '1.2rem', marginBottom: 12 }}>Delete post?</div>
+            <div style={{ color: '#aaa', fontSize: 15, marginBottom: 18 }}>
+              This can’t be undone and it will be removed from your profile, the timeline of any accounts that follow you, and from search results.
+            </div>
+            <ModalBtn red>Delete</ModalBtn>
+            <ModalBtn onClick={() => setShowModal(false)}>Cancel</ModalBtn>
+          </Modal>
+        </ModalBg>
+      )}
     </Layout>
   );
 }
