@@ -1,4 +1,4 @@
-const BASE_URL = 'https://api.tweeterdemo.kro.kr';
+const BASE_URL = '/api';
 
 // 전체 트윗 조회
 export async function fetchTweets() {
@@ -38,7 +38,16 @@ export async function deleteTweet({ tweetId, userId, password }) {
 
 // 사용자 상세정보 조회
 export async function fetchUserDetail(userId) {
-  const res = await fetch(`${BASE_URL}/users/${userId}`);
-  if (!res.ok) throw await res.json();
-  return res.json();
+  try {
+    const response = await fetch(`${BASE_URL}/users/${userId}`);
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "사용자 정보를 불러오지 못했습니다.");
+    }
+    const data = await response.json();
+    return data; // API 응답 데이터를 반환
+  } catch (error) {
+    console.error("API 호출 오류:", error);
+    throw error;
+  }
 }

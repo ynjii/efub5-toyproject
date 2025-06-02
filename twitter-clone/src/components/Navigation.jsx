@@ -1,6 +1,9 @@
 import styled from "styled-components";
 import { Link } from "react-router-dom";
-import logo from "../assets/logo.png";
+import { 
+  FaXTwitter, FaHashtag, FaBell, FaEnvelope, FaBookmark, FaUsers, FaCrown, 
+} from "react-icons/fa6";
+import { FaEllipsisH, FaHome, FaListAlt, FaRegStickyNote, FaUserCircle} from "react-icons/fa";
 
 const Nav = styled.nav`
   width: 260px;
@@ -28,8 +31,8 @@ const NavItem = styled.li`
   gap: 1.2rem;
   margin-bottom: 1.5rem;
   font-size: 1.25rem;
-  font-weight: ${({ active }) => (active ? "bold" : "normal")};
-  color: ${({ active }) => (active ? "#fff" : "#d9d9d9")};
+  font-weight: ${({ isActive }) => (isActive ? "bold" : "normal")};
+  color: ${({ isActive }) => (isActive ? "#fff" : "#d9d9d9")};
 `;
 
 const PostButton = styled.button`
@@ -88,59 +91,70 @@ function Navigation() {
     <Nav>
       <div>
         <div style={{ margin: "0 0 2rem 1.5rem" }}>
-          <img src={logo} alt="logo" style={{ width: 75, height: 75 }} />
+          <FaXTwitter size={75} color="#fff" />
         </div>
         <NavList>
-          <NavItem active>
-            <span>🏠</span>
+          <NavItem isActive>
+            <FaHome />
             <Link to="/" style={{ color: "#fff", fontWeight: "bold" }}>
               Home
             </Link>
           </NavItem>
           <NavItem>
-            <span>🔍</span>Explore
+            <FaHashtag />
+            Explore
           </NavItem>
           <NavItem>
-            <span>🔔</span>Notifications
+            <FaBell />
+            Notifications
           </NavItem>
           <NavItem>
-            <span>✉️</span>Messages
+            <FaEnvelope />
+            Messages
           </NavItem>
           <NavItem>
-            <span>📝</span>Grok
+            <FaRegStickyNote />
+            Grok
           </NavItem>
           <NavItem>
-            <span>📋</span>Lists
+            <FaListAlt />
+            Lists
           </NavItem>
           <NavItem>
-            <span>🔖</span>Bookmarks
+            <FaBookmark />
+            Bookmarks
           </NavItem>
           <NavItem>
-            <span>👥</span>Communities
+            <FaUsers />
+            Communities
           </NavItem>
           <NavItem>
-            <span>❌</span>Premium
+            <FaCrown />
+            Premium
           </NavItem>
           <NavItem>
-            <span>👤</span>
+            <FaUserCircle />
             <Link to="/profile" style={{ color: "#fff" }}>
               Profile
             </Link>
           </NavItem>
           <NavItem>
-            <span>😊</span>More
+            <FaEllipsisH />
+            More
           </NavItem>
         </NavList>
         <PostButton>Post</PostButton>
       </div>
       <UserBox>
-        <Avatar>🧑‍💻</Avatar>
+        <Avatar>
+          <FaUserCircle size={32} />
+        </Avatar>
         <UserInfo>
           <UserName>김윤지</UserName>
           <UserId>@efub_5th_toy</UserId>
         </UserInfo>
         <span style={{ marginLeft: "auto", color: "#888", fontSize: "1.5rem" }}>
-          ...
+          <FaEllipsisH />
         </span>
       </UserBox>
     </Nav>

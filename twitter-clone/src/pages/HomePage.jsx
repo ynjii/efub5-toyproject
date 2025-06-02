@@ -197,7 +197,6 @@ function HomePage() {
     if (!content.trim()) return;
     setPosting(true);
     try {
-      // userId는 실제 로그인된 유저의 id로 교체 필요
       const newTweet = await postTweet({ userId: 3, content });
       setTweets((prev) => [newTweet, ...prev]);
       setContent("");

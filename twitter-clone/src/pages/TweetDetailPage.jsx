@@ -213,15 +213,14 @@ function TweetDetailPage() {
       .finally(() => setLoading(false));
   }, [id]);
 
-  // 트윗 삭제 예시 (비밀번호 입력 등은 별도 구현 필요)
-  // const handleDelete = async () => {
-  //   try {
-  //     await deleteTweet({ tweetId: id, userId: 1, password: "비밀번호" });
-  //     // 삭제 후 이동 등 처리
-  //   } catch (err) {
-  //     alert(err.message || "삭제 실패");
-  //   }
-  // };
+  const handleDelete = async () => {
+    try {
+      await deleteTweet({ tweetId: id, userId: 1, password: "비밀번호" });
+      // 삭제 후 이동 등 처리
+    } catch (err) {
+      alert(err.message || "삭제 실패");
+    }
+  };
 
   if (loading) return <div style={{ color: "#fff", padding: 20 }}>로딩중...</div>;
   if (!tweet) return <div style={{ color: "#fff", padding: 20 }}>트윗 없음</div>;

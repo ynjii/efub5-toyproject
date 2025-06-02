@@ -291,7 +291,7 @@ const dummyTrends = [
 ];
 
 function ProfilePage() {
-  const userId = 1; // 실제 로그인된 유저의 id로 교체 필요
+  const userId = 3;
   const [profile, setProfile] = useState(null);
   const [tweets, setTweets] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -299,8 +299,18 @@ function ProfilePage() {
   useEffect(() => {
     fetchUserDetail(userId)
       .then((data) => {
-        setProfile(data);
-        setTweets(data.tweets || []);
+        setProfile({
+          userName: data.userName,
+          username: data.userName, // username이 없으므로 userName 사용
+          avatar:
+            data.avatar ||
+            "https://abs.twimg.com/sticky/default_profile_images/default_profile_400x400.png",
+          bio: data.bio,
+          birth: data.birth,
+          following: data.following,
+          follower: data.follower,
+        });
+        setTweets(data.tweets || []); // 트윗 목록 설정
       })
       .catch((err) => {
         alert(err.message || "사용자 정보를 불러오지 못했습니다.");
@@ -316,23 +326,14 @@ function ProfilePage() {
       <Main>
         <Banner />
         <ProfileSection>
-          <Avatar
-            src={
-              profile.avatar ||
-              "https://abs.twimg.com/sticky/default_profile_images/default_profile_400x400.png"
-            }
-            alt="avatar"
-          />
+          <Avatar src={profile.avatar} alt="avatar" />
           <EditProfileBtn>Edit profile</EditProfileBtn>
           <ProfileInfo>
             <Name>{profile.userName}</Name>
-            <Username>@{profile.username || profile.userName}</Username>
+            <Username>@{profile.username}</Username>
             <Bio>{profile.bio}</Bio>
             <Joined>
-              📅{" "}
-              {profile.birth
-                ? `Joined ${new Date(profile.birth).toLocaleDateString()}`
-                : ""}
+              📅 Joined {new Date(profile.birth).toLocaleDateString()}
             </Joined>
             <FollowInfo>
               <span>{profile.following}</span> Following
@@ -354,13 +355,10 @@ function ProfilePage() {
               key={tweet.tweetId}
               tweet={{
                 id: tweet.tweetId,
-                author: tweet.userName,
-                username: tweet.userName,
-                avatar:
-                  profile.avatar ||
-                  "https://abs.twimg.com/sticky/default_profile_images/default_profile_400x400.png",
+                author: profile.userName,
+                username: profile.username,
+                avatar: profile.avatar,
                 content: tweet.content,
-                image: null,
                 stats: {
                   replies: "-",
                   retweets: "-",
