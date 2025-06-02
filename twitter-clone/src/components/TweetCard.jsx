@@ -84,6 +84,12 @@ const TweetText = styled.div`
   font-size: 1.1rem;
 `;
 
+const TweetMeta = styled.div`
+  color: #888;
+  font-size: 0.85rem;
+  margin-top: 0.3rem;
+`;
+
 const TweetImage = styled.img`
   width: 100%;
   max-height: 350px;
@@ -114,13 +120,21 @@ function TweetCard({ tweet }) {
   return (
     <>
       <Card onClick={handleCardClick}>
-        <Avatar src={tweet.avatar} alt="avatar" />
+        <Avatar
+          src={tweet.avatar}
+          alt="avatar"
+          onError={e => {
+            e.target.onerror = null;
+            e.target.src = "https://abs.twimg.com/sticky/default_profile_images/default_profile_400x400.png";
+          }}
+        />
         <Content>
           <Author>
             {tweet.author}
             <Username>@{tweet.username}</Username>
           </Author>
           <TweetText>{tweet.content}</TweetText>
+          <TweetMeta>Created: {tweet.createdAt}</TweetMeta>
           {tweet.image && <TweetImage src={tweet.image} alt="tweet" />}
           <Stats>
             <span>💬 {tweet.stats.replies}</span>

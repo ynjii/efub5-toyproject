@@ -201,10 +201,21 @@ const ModalBtn = styled.button`
   &:hover { opacity: 0.9; }
 `;
 
+const dummyTrends = [
+  { title: "싱크로유", posts: "12.7K posts" },
+  { title: "#스트레이키즈", posts: "223K posts" },
+  { title: "티켓 양도", posts: "3,871 posts" },
+  { title: "#윤두준", posts: "8,094 posts" },
+  { title: "도경수 노래", posts: "" },
+  { title: "#아미들_남준이에게_돌아갈_결심", posts: "111K posts" },
+  { title: "#규현", posts: "" },
+];
+
 function TweetDetailPage() {
   const { id } = useParams();
   const [tweet, setTweet] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [showModal, setShowModal] = useState(false); // showModal 상태 추가
 
   useEffect(() => {
     fetchTweetDetail(id)
@@ -215,10 +226,11 @@ function TweetDetailPage() {
 
   const handleDelete = async () => {
     try {
-      await deleteTweet({ tweetId: id, userId: 1, password: "비밀번호" });
-      // 삭제 후 이동 등 처리
+      await deleteTweet({ tweetId: id, userId: 3, password: "your_password" });
+      alert("트윗이 삭제되었습니다.");
+      window.location.href = "/";
     } catch (err) {
-      alert(err.message || "삭제 실패");
+      alert(err.message || "트윗 삭제 실패");
     }
   };
 
@@ -237,38 +249,42 @@ function TweetDetailPage() {
           </AuthorRow>
           <TweetContent>{tweet.content}</TweetContent>
           <TweetMeta>
-            {new Date(tweet.createdAt).toLocaleString()}
+            Created: {new Date(tweet.createdAt).toLocaleString()}
+            <br />
+            Modified: {new Date(tweet.modifiedAt).toLocaleString()}
           </TweetMeta>
-          {/* <MoreBtn onClick={handleDelete}>삭제</MoreBtn> */}
+          <TweetActions>
+            <button
+              onClick={() => setShowModal(true)} // 모달 표시
+              style={{ color: "red", cursor: "pointer" }}
+            >
+              삭제
+            </button>
+          </TweetActions>
         </TweetCard>
       </Main>
       <RightBar>
         <SearchInput placeholder="Search" disabled />
         <Card>
-          <CardTitle>Subscribe to Premium</CardTitle>
-          <div style={{ fontSize: 15, marginBottom: 10 }}>
-            Subscribe to unlock new features and if eligible, receive a share of ads revenue.
-          </div>
-          <ModalBtn style={{ width: '100%' }}>Subscribe</ModalBtn>
-        </Card>
-        <Card>
           <CardTitle>Trends for you</CardTitle>
           {dummyTrends.map((trend, idx) => (
             <TrendItem key={idx}>
               <div style={{ fontWeight: 500 }}>{trend.title}</div>
-              <div style={{ color: '#888', fontSize: 13 }}>{trend.posts}</div>
+              <div style={{ color: "#888", fontSize: 13 }}>{trend.posts}</div>
             </TrendItem>
           ))}
         </Card>
       </RightBar>
       {showModal && (
         <ModalBg onClick={() => setShowModal(false)}>
-          <Modal onClick={e => e.stopPropagation()}>
-            <div style={{ fontWeight: 'bold', fontSize: '1.2rem', marginBottom: 12 }}>Delete post?</div>
-            <div style={{ color: '#aaa', fontSize: 15, marginBottom: 18 }}>
+          <Modal onClick={(e) => e.stopPropagation()}>
+            <div style={{ fontWeight: "bold", fontSize: "1.2rem", marginBottom: 12 }}>
+              Delete post?
+            </div>
+            <div style={{ color: "#aaa", fontSize: 15, marginBottom: 18 }}>
               This can’t be undone and it will be removed from your profile, the timeline of any accounts that follow you, and from search results.
             </div>
-            <ModalBtn red>Delete</ModalBtn>
+            <ModalBtn red onClick={handleDelete}>Delete</ModalBtn>
             <ModalBtn onClick={() => setShowModal(false)}>Cancel</ModalBtn>
           </Modal>
         </ModalBg>

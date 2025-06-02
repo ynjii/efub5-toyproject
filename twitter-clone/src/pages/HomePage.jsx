@@ -170,11 +170,11 @@ That’s just on new sites and expansions, not counting operations costs, which 
 const dummyTrends = [
   { title: "싱크로유", posts: "12.7K posts" },
   { title: "#스트레이키즈", posts: "223K posts" },
-  { title: "티켓 앙도", posts: "3,871 posts" },
+  { title: "티켓 양양도", posts: "3,871 posts" },
   { title: "#윤두준", posts: "8,094 posts" },
   { title: "도경수 노래", posts: "" },
-  { title: "#아미들_남준이에게_돌아갈_걸심", posts: "111K posts" },
-  { title: "#규현더", posts: "" },
+  { title: "#아미들_남준이에게_돌아갈_결심", posts: "111K posts" },
+  { title: "#규현", posts: "" },
 ];
 
 function HomePage() {
@@ -258,14 +258,13 @@ function HomePage() {
                 avatar:
                   "https://abs.twimg.com/sticky/default_profile_images/default_profile_400x400.png",
                 content: tweet.content,
-                image: null,
+                createdAt: new Date(tweet.createdAt).toLocaleString(), // 생성 날짜 표시
                 stats: {
                   replies: "-",
                   retweets: "-",
                   likes: "-",
                   views: "-",
                 },
-                createdAt: tweet.createdAt,
               }}
             />
           ))

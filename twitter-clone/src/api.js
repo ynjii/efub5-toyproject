@@ -4,14 +4,18 @@ const BASE_URL = '/api';
 export async function fetchTweets() {
   const res = await fetch(`${BASE_URL}/tweets`);
   if (!res.ok) throw await res.json();
-  return res.json();
+  const data = await res.json();
+  console.log("전체 트윗 데이터:", data); // 디버깅용
+  return data;
 }
 
 // 트윗 세부 조회
 export async function fetchTweetDetail(tweetId) {
   const res = await fetch(`${BASE_URL}/tweets/${tweetId}`);
   if (!res.ok) throw await res.json();
-  return res.json();
+  const data = await res.json();
+  console.log("트윗 상세 데이터:", data); // 디버깅용
+  return data;
 }
 
 // 트윗 등록
@@ -27,12 +31,18 @@ export async function postTweet({ userId, content }) {
 
 // 트윗 삭제
 export async function deleteTweet({ tweetId, userId, password }) {
-  const res = await fetch(`${BASE_URL}/tweets/${tweetId}`, {
+  console.log("DELETE 요청 URL:", `/api/tweets/${tweetId}`);
+  console.log("요청 본문:", { userId, password });
+  const res = await fetch(`/api/tweets/${tweetId}`, {
     method: 'DELETE',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ userId, password }),
   });
-  if (!res.ok) throw await res.json();
+  if (!res.ok) {
+    const errorData = await res.json();
+    console.error("삭제 요청 실패:", errorData); // 디버깅용
+    throw new Error(errorData.message || "트윗 삭제 실패");
+  }
   return res.json();
 }
 

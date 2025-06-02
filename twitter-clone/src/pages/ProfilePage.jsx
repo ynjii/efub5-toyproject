@@ -270,7 +270,7 @@ const dummyWho = [
     name: "서울교통공사 SeoulMetro",
     username: "seoul_metro",
     avatar:
-      "https://pbs.twimg.com/profile_images/1585121133243805696/8kQnQw8d_400x400.jpg",
+      "https://i.namu.wiki/i/4x71EUl_PyRPpj30NFq2Q_oa8rgYH0HRpz4eHWHVxgTF4dWiJFXMd5nMihKSRJBI9-rK0_fF6kMb24nvQ_O1fg.svg",
     desc: "",
   },
   {
@@ -301,7 +301,7 @@ function ProfilePage() {
       .then((data) => {
         setProfile({
           userName: data.userName,
-          username: data.userName, // username이 없으므로 userName 사용
+          username: data.userName,
           avatar:
             data.avatar ||
             "https://abs.twimg.com/sticky/default_profile_images/default_profile_400x400.png",
@@ -310,7 +310,22 @@ function ProfilePage() {
           following: data.following,
           follower: data.follower,
         });
-        setTweets(data.tweets || []); // 트윗 목록 설정
+
+        // 임시 더미 트윗
+        setTweets([
+          {
+            tweetId: 1,
+            userName: "happycat",
+            content: "테스트 트윗입니다",
+            createdAt: new Date(),
+          },
+          {
+            tweetId: 2,
+            userName: "happycat",
+            content: "두 번째 트윗",
+            createdAt: new Date(),
+          },
+        ]);
       })
       .catch((err) => {
         alert(err.message || "사용자 정보를 불러오지 못했습니다.");
@@ -326,7 +341,15 @@ function ProfilePage() {
       <Main>
         <Banner />
         <ProfileSection>
-          <Avatar src={profile.avatar} alt="avatar" />
+          <Avatar
+            src={profile.avatar}
+            alt="avatar"
+            onError={(e) => {
+              e.target.onerror = null;
+              e.target.src =
+                "https://abs.twimg.com/sticky/default_profile_images/default_profile_400x400.png";
+            }}
+          />
           <EditProfileBtn>Edit profile</EditProfileBtn>
           <ProfileInfo>
             <Name>{profile.userName}</Name>
@@ -355,10 +378,12 @@ function ProfilePage() {
               key={tweet.tweetId}
               tweet={{
                 id: tweet.tweetId,
-                author: profile.userName,
-                username: profile.username,
-                avatar: profile.avatar,
+                author: tweet.userName,
+                username: tweet.userName,
+                avatar:
+                  "https://abs.twimg.com/sticky/default_profile_images/default_profile_400x400.png",
                 content: tweet.content,
+                createdAt: new Date(tweet.createdAt).toLocaleString(),
                 stats: {
                   replies: "-",
                   retweets: "-",
@@ -376,7 +401,15 @@ function ProfilePage() {
           <CardTitle>You might like</CardTitle>
           {dummyWho.map((who, idx) => (
             <WhoItem key={idx}>
-              <WhoAvatar src={who.avatar} alt={who.name} />
+              <WhoAvatar
+                src={who.avatar}
+                alt={who.name}
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src =
+                    "https://abs.twimg.com/sticky/default_profile_images/default_profile_400x400.png";
+                }}
+              />
               <WhoInfo>
                 <WhoName>{who.name}</WhoName>
                 <WhoUsername>@{who.username}</WhoUsername>

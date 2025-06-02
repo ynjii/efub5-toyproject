@@ -4,6 +4,8 @@ import {
   FaXTwitter, FaHashtag, FaBell, FaEnvelope, FaBookmark, FaUsers, FaCrown, 
 } from "react-icons/fa6";
 import { FaEllipsisH, FaHome, FaListAlt, FaRegStickyNote, FaUserCircle} from "react-icons/fa";
+import { useEffect, useState } from "react";
+import { fetchUserDetail } from "../api";
 
 const Nav = styled.nav`
   width: 260px;
@@ -31,8 +33,8 @@ const NavItem = styled.li`
   gap: 1.2rem;
   margin-bottom: 1.5rem;
   font-size: 1.25rem;
-  font-weight: ${({ isActive }) => (isActive ? "bold" : "normal")};
-  color: ${({ isActive }) => (isActive ? "#fff" : "#d9d9d9")};
+  font-weight: ${({ active }) => (active ? "bold" : "normal")};
+  color: ${({ active }) => (active ? "#fff" : "#d9d9d9")};
 `;
 
 const PostButton = styled.button`
@@ -87,6 +89,14 @@ const UserId = styled.div`
 `;
 
 function Navigation() {
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    fetchUserDetail(3)
+      .then(setUser)
+      .catch(() => setUser({ userName: "Unknown", userId: "unknown" }));
+  }, []);
+
   return (
     <Nav>
       <div>
@@ -94,7 +104,7 @@ function Navigation() {
           <FaXTwitter size={75} color="#fff" />
         </div>
         <NavList>
-          <NavItem isActive>
+          <NavItem active>
             <FaHome />
             <Link to="/" style={{ color: "#fff", fontWeight: "bold" }}>
               Home
@@ -150,8 +160,8 @@ function Navigation() {
           <FaUserCircle size={32} />
         </Avatar>
         <UserInfo>
-          <UserName>김윤지</UserName>
-          <UserId>@efub_5th_toy</UserId>
+          <UserName>{user ? user.userName : ""}</UserName>
+          <UserId>@{user ? user.userName : ""}</UserId>
         </UserInfo>
         <span style={{ marginLeft: "auto", color: "#888", fontSize: "1.5rem" }}>
           <FaEllipsisH />
