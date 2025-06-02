@@ -2,6 +2,15 @@ import styled from "styled-components";
 import { useEffect, useState } from "react";
 import { fetchTweets, postTweet } from "../api";
 import TweetCard from "../components/TweetCard";
+import {
+  FaRegImage,
+  FaRegSmile,
+  FaRegCalendarAlt,
+  FaMapMarkerAlt,
+  FaCog,
+  FaRegFileVideo,
+} from "react-icons/fa";
+import { FiMoreHorizontal } from "react-icons/fi";
 
 const NAV_WIDTH = 300;
 const RIGHTBAR_WIDTH = 350;
@@ -13,9 +22,8 @@ const Layout = styled.div`
 `;
 
 const Main = styled.main`
-  width: 1250px;
+  width: 600px;
   min-height: 100vh;
-  position: center;
   z-index: 1;
   margin-left: ${NAV_WIDTH}px;
   margin-right: ${RIGHTBAR_WIDTH}px;
@@ -35,6 +43,19 @@ const Header = styled.div`
   position: sticky;
   top: 0;
   z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+`;
+
+const Tab = styled.span`
+  padding-bottom: 6px;
+  margin-right: 20px;
+  border-bottom: ${(props) => (props.active ? "3px solid #1da1f2" : "none")};
+  color: ${(props) => (props.active ? "#fff" : "#888")};
+  font-weight: ${(props) => (props.active ? "bold" : 400)};
+  cursor: pointer;
+  font-size: 1.1rem;
 `;
 
 const TweetForm = styled.form`
@@ -50,7 +71,7 @@ const TweetInputRow = styled.div`
   align-items: flex-start;
 `;
 
-const Avatar = styled.div`
+const Avatar = styled.img`
   width: 48px;
   height: 48px;
   border-radius: 50%;
@@ -78,9 +99,9 @@ const TweetActions = styled.div`
 
 const ActionIcons = styled.div`
   display: flex;
-  gap: 1rem;
+  gap: 1.2rem;
   color: #1da1f2;
-  font-size: 1.2rem;
+  font-size: 1.25rem;
 `;
 
 const PostButton = styled.button`
@@ -210,65 +231,72 @@ function HomePage() {
     <Layout>
       <Main>
         <Header>
-          <span
+          <Tab active>For you</Tab>
+          <Tab>Following</Tab>
+          <div
             style={{
-              borderBottom: "3px solid #1da1f2",
-              paddingBottom: 6,
-              marginRight: 20,
+              marginLeft: "auto",
+              color: "#888",
+              fontSize: 22,
+              cursor: "pointer",
             }}
           >
-            For you
-          </span>
-          <span style={{ color: "#888", fontWeight: 400 }}>Following</span>
+            <FiMoreHorizontal />
+          </div>
         </Header>
         <TweetForm onSubmit={handleSubmit}>
           <TweetInputRow>
-            <Avatar />
+            <Avatar
+              src="https://abs.twimg.com/sticky/default_profile_images/default_profile_400x400.png"
+              alt="avatar"
+            />
             <TweetTextarea
               value={content}
               onChange={(e) => setContent(e.target.value)}
-              placeholder="무슨 일이 일어나고 있나요?"
+              placeholder="What is happening?!"
               disabled={posting}
             />
           </TweetInputRow>
           <TweetActions>
             <ActionIcons>
-              <span>📷</span>
-              <span>🎬</span>
-              <span>😊</span>
-              <span>📅</span>
-              <span>📍</span>
-              <span>⚙️</span>
+              <FaRegImage />
+              <FaRegFileVideo />
+              <FaRegSmile />
+              <FaRegCalendarAlt />
+              <FaMapMarkerAlt />
+              <FaCog />
             </ActionIcons>
             <PostButton type="submit" disabled={posting || !content.trim()}>
               {posting ? "Posting..." : "Post"}
             </PostButton>
           </TweetActions>
         </TweetForm>
-        {loading ? (
-          <div style={{ color: "#fff", padding: 20 }}>로딩중...</div>
-        ) : (
-          tweets.map((tweet) => (
-            <TweetCard
-              key={tweet.tweetId}
-              tweet={{
-                id: tweet.tweetId,
-                author: tweet.userName,
-                username: tweet.userName,
-                avatar:
-                  "https://abs.twimg.com/sticky/default_profile_images/default_profile_400x400.png",
-                content: tweet.content,
-                createdAt: new Date(tweet.createdAt).toLocaleString(), // 생성 날짜 표시
-                stats: {
-                  replies: "-",
-                  retweets: "-",
-                  likes: "-",
-                  views: "-",
-                },
-              }}
-            />
-          ))
-        )}
+        <Feed>
+          {loading ? (
+            <div style={{ color: "#fff", padding: 20 }}>로딩중...</div>
+          ) : (
+            tweets.map((tweet) => (
+              <TweetCard
+                key={tweet.tweetId}
+                tweet={{
+                  id: tweet.tweetId,
+                  author: tweet.userName,
+                  username: tweet.userName,
+                  avatar:
+                    "https://abs.twimg.com/sticky/default_profile_images/default_profile_400x400.png",
+                  content: tweet.content,
+                  createdAt: new Date(tweet.createdAt).toLocaleString(),
+                  stats: {
+                    replies: "-",
+                    retweets: "-",
+                    likes: "-",
+                    views: "-",
+                  },
+                }}
+              />
+            ))
+          )}
+        </Feed>
       </Main>
       <RightBar>
         <SearchInput placeholder="Search" disabled />

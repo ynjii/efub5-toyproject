@@ -2,7 +2,7 @@ import styled from "styled-components";
 import ProfileCard from "../components/ProfileCard";
 import TweetCard from "../components/TweetCard";
 import { useEffect, useState } from "react";
-import { fetchUserDetail } from "../api";
+import { fetchUserDetail, fetchTweetDetail } from "../api"; // 트윗 상세 불러오는 함수 import
 
 const NAV_WIDTH = 300;
 const MAIN_WIDTH = 600;
@@ -311,21 +311,14 @@ function ProfilePage() {
           follower: data.follower,
         });
 
-        // 임시 더미 트윗
-        setTweets([
-          {
-            tweetId: 1,
-            userName: "happycat",
-            content: "테스트 트윗입니다",
-            createdAt: new Date(),
-          },
-          {
-            tweetId: 2,
-            userName: "happycat",
-            content: "두 번째 트윗",
-            createdAt: new Date(),
-          },
-        ]);
+        // tweetId 6, 7, 9 트윗만 불러오기
+        Promise.all([
+          fetchTweetDetail(6),
+          fetchTweetDetail(7),
+          fetchTweetDetail(9),
+        ]).then((tweetArr) => {
+          setTweets(tweetArr);
+        });
       })
       .catch((err) => {
         alert(err.message || "사용자 정보를 불러오지 못했습니다.");

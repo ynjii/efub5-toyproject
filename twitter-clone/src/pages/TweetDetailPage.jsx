@@ -2,6 +2,7 @@ import styled from "styled-components";
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { fetchTweetDetail, deleteTweet } from "../api";
+import { FaRegComment, FaRetweet, FaRegHeart, FaChartBar, FaEllipsisH } from "react-icons/fa";
 
 const NAV_WIDTH = 300;
 const RIGHTBAR_WIDTH = 350;
@@ -215,7 +216,8 @@ function TweetDetailPage() {
   const { id } = useParams();
   const [tweet, setTweet] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [showModal, setShowModal] = useState(false); // showModal 상태 추가
+  const [showModal, setShowModal] = useState(false);
+  const [showMore, setShowMore] = useState(false);
 
   useEffect(() => {
     fetchTweetDetail(id)
@@ -226,7 +228,7 @@ function TweetDetailPage() {
 
   const handleDelete = async () => {
     try {
-      await deleteTweet({ tweetId: id, userId: 3, password: "your_password" });
+      await deleteTweet({ tweetId: id, userId: 3, password: "meowmeow" });
       alert("트윗이 삭제되었습니다.");
       window.location.href = "/";
     } catch (err) {
@@ -240,28 +242,65 @@ function TweetDetailPage() {
   return (
     <Layout>
       <Main>
-        <Header>Tweet</Header>
+        <Header>
+          <span
+            style={{ fontSize: 22, marginRight: 10, cursor: "pointer" }}
+            onClick={() => window.history.back()}
+          >
+            &larr;
+          </span>
+          Post
+        </Header>
         <TweetCard>
-          <AuthorRow>
+          <div style={{ display: "flex", alignItems: "flex-start", position: "relative" }}>
             <Avatar src="https://abs.twimg.com/sticky/default_profile_images/default_profile_400x400.png" />
-            <div>{tweet.userName}</div>
-            <Username>@{tweet.userName}</Username>
-          </AuthorRow>
-          <TweetContent>{tweet.content}</TweetContent>
-          <TweetMeta>
-            Created: {new Date(tweet.createdAt).toLocaleString()}
-            <br />
-            Modified: {new Date(tweet.modifiedAt).toLocaleString()}
-          </TweetMeta>
-          <TweetActions>
-            <button
-              onClick={() => setShowModal(true)} // 모달 표시
-              style={{ color: "red", cursor: "pointer" }}
-            >
-              삭제
-            </button>
-          </TweetActions>
+            <div style={{ flex: 1 }}>
+              <AuthorRow>
+                <span>{tweet.userName}</span>
+                <Username>@{tweet.userName}</Username>
+              </AuthorRow>
+              <TweetContent style={{ fontSize: "1.25rem", margin: "1.2rem 0 1.5rem 0" }}>
+                {tweet.content}
+              </TweetContent>
+              <TweetMeta style={{ marginBottom: 18 }}>
+                <span>
+                  {new Date(tweet.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} · {new Date(tweet.createdAt).toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" })}
+                </span>
+                <br />
+                <span style={{ color: "#444", fontSize: 13 }}>
+                  Last modified: {new Date(tweet.modifiedAt).toLocaleString()}
+                </span>
+              </TweetMeta>
+              <TweetActions>
+                <FaRegComment />
+                <FaRetweet />
+                <FaRegHeart />
+                <FaChartBar />
+              </TweetActions>
+            </div>
+            <MoreBtn onClick={() => setShowMore((v) => !v)}>
+              <FaEllipsisH />
+            </MoreBtn>
+            {showMore && (
+              <MoreMenu>
+                <MoreMenuItem
+                  onClick={() => {
+                    setShowMore(false);
+                    setShowModal(true);
+                  }}
+                  style={{ color: "red" }}
+                >
+                  삭제
+                </MoreMenuItem>
+              </MoreMenu>
+            )}
+          </div>
         </TweetCard>
+        <ReplyBox>
+          <Avatar src="https://abs.twimg.com/sticky/default_profile_images/default_profile_400x400.png" />
+          <ReplyInput placeholder="Post your reply" disabled />
+          <ReplyButton disabled>Reply</ReplyButton>
+        </ReplyBox>
       </Main>
       <RightBar>
         <SearchInput placeholder="Search" disabled />
@@ -292,5 +331,25 @@ function TweetDetailPage() {
     </Layout>
   );
 }
+
+const MoreMenu = styled.div`
+  position: absolute;
+  top: 2.5rem;
+  right: 1.5rem;
+  background: #222;
+  border-radius: 0.7rem;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+  min-width: 110px;
+  z-index: 10;
+  padding: 0.3rem 0;
+`;
+const MoreMenuItem = styled.div`
+  padding: 0.7rem 1.2rem;
+  cursor: pointer;
+  font-size: 1rem;
+  &:hover {
+    background: #333;
+  }
+`;
 
 export default TweetDetailPage;

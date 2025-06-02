@@ -1,6 +1,13 @@
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
+import {
+  FaRegComment,
+  FaRetweet,
+  FaRegHeart,
+  FaChartBar,
+  FaEllipsisH,
+} from "react-icons/fa";
 
 const Card = styled.div`
   border-bottom: 1px solid #222;
@@ -106,7 +113,15 @@ const Stats = styled.div`
   margin-top: 0.7rem;
 `;
 
-function TweetCard({ tweet }) {
+const TweetActions = styled.div`
+  display: flex;
+  gap: 2.5rem;
+  color: #888;
+  font-size: 1.2rem;
+  margin: 1rem 0 0.5rem 0;
+`;
+
+function TweetCard({ tweet, onMore }) {
   const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
 
@@ -137,10 +152,10 @@ function TweetCard({ tweet }) {
           <TweetMeta>Created: {tweet.createdAt}</TweetMeta>
           {tweet.image && <TweetImage src={tweet.image} alt="tweet" />}
           <Stats>
-            <span>💬 {tweet.stats.replies}</span>
-            <span>🔁 {tweet.stats.retweets}</span>
-            <span>❤️ {tweet.stats.likes}</span>
-            <span>👁️ {tweet.stats.views}</span>
+            <span><FaRegComment /> {tweet.stats.replies}</span>
+            <span><FaRetweet /> {tweet.stats.retweets}</span>
+            <span><FaRegHeart /> {tweet.stats.likes}</span>
+            <span><FaChartBar /> {tweet.stats.views}</span>
           </Stats>
         </Content>
         <MoreBtn
@@ -152,6 +167,12 @@ function TweetCard({ tweet }) {
           aria-label="더보기"
         >...</MoreBtn>
       </Card>
+      <TweetActions>
+
+        <MoreBtn onClick={onMore}>
+          <FaEllipsisH />
+        </MoreBtn>
+      </TweetActions>
       {showModal && (
         <ModalBg onClick={() => setShowModal(false)}>
           <Modal onClick={e => e.stopPropagation()}>

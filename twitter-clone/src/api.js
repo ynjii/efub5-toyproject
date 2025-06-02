@@ -1,4 +1,4 @@
-const BASE_URL = '/api';
+const BASE_URL = 'https://api.tweeterdemo.kro.kr';
 
 // 전체 트윗 조회
 export async function fetchTweets() {
@@ -31,9 +31,9 @@ export async function postTweet({ userId, content }) {
 
 // 트윗 삭제
 export async function deleteTweet({ tweetId, userId, password }) {
-  console.log("DELETE 요청 URL:", `/api/tweets/${tweetId}`);
+  console.log("DELETE 요청 URL:", `${BASE_URL}/tweets/${tweetId}`);
   console.log("요청 본문:", { userId, password });
-  const res = await fetch(`/api/tweets/${tweetId}`, {
+  const res = await fetch(`${BASE_URL}/tweets/${tweetId}`, {
     method: 'DELETE',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ userId, password }),
