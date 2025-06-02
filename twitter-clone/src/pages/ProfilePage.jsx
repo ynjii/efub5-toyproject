@@ -1,10 +1,13 @@
 import styled from "styled-components";
 import ProfileCard from "../components/ProfileCard";
 import TweetCard from "../components/TweetCard";
+import { useEffect, useState } from "react";
+import { fetchUserDetail } from "../api";
 
 const NAV_WIDTH = 300;
 const MAIN_WIDTH = 600;
 const PROFILE_CONTENT_WIDTH = 600;
+const RIGHTBAR_WIDTH = 350; // 누락되어 추가
 
 const Layout = styled.div`
   background: #000;
@@ -288,24 +291,52 @@ const dummyTrends = [
 ];
 
 function ProfilePage() {
+  const userId = 1; // 실제 로그인된 유저의 id로 교체 필요
+  const [profile, setProfile] = useState(null);
+  const [tweets, setTweets] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchUserDetail(userId)
+      .then((data) => {
+        setProfile(data);
+        setTweets(data.tweets || []);
+      })
+      .catch((err) => {
+        alert(err.message || "사용자 정보를 불러오지 못했습니다.");
+      })
+      .finally(() => setLoading(false));
+  }, [userId]);
+
+  if (loading) return <div style={{ color: "#fff" }}>로딩중...</div>;
+  if (!profile) return <div style={{ color: "#fff" }}>사용자 정보 없음</div>;
+
   return (
     <Layout>
       <Main>
         <Banner />
         <ProfileSection>
-          <Avatar src={dummyProfile.avatar} alt="avatar" />
+          <Avatar
+            src={
+              profile.avatar ||
+              "https://abs.twimg.com/sticky/default_profile_images/default_profile_400x400.png"
+            }
+            alt="avatar"
+          />
           <EditProfileBtn>Edit profile</EditProfileBtn>
           <ProfileInfo>
-            <Name>{dummyProfile.name}</Name>
-            <Username>@{dummyProfile.username}</Username>
-            <Bio>{dummyProfile.bio}</Bio>
-            <Joined>📅 {dummyProfile.joined}</Joined>
+            <Name>{profile.userName}</Name>
+            <Username>@{profile.username || profile.userName}</Username>
+            <Bio>{profile.bio}</Bio>
+            <Joined>
+              📅{" "}
+              {profile.birth
+                ? `Joined ${new Date(profile.birth).toLocaleDateString()}`
+                : ""}
+            </Joined>
             <FollowInfo>
-              <span>{dummyProfile.following}</span> Following
-              <span style={{ marginLeft: 15 }}>
-                {dummyProfile.followers}
-              </span>{" "}
-              Followers
+              <span>{profile.following}</span> Following
+              <span style={{ marginLeft: 15 }}>{profile.follower}</span> Followers
             </FollowInfo>
           </ProfileInfo>
         </ProfileSection>
@@ -318,8 +349,26 @@ function ProfilePage() {
           <Tab>Likes</Tab>
         </Tabs>
         <Feed>
-          {dummyTweets.map((tweet) => (
-            <TweetCard key={tweet.id} tweet={tweet} />
+          {tweets.map((tweet) => (
+            <TweetCard
+              key={tweet.tweetId}
+              tweet={{
+                id: tweet.tweetId,
+                author: tweet.userName,
+                username: tweet.userName,
+                avatar:
+                  profile.avatar ||
+                  "https://abs.twimg.com/sticky/default_profile_images/default_profile_400x400.png",
+                content: tweet.content,
+                image: null,
+                stats: {
+                  replies: "-",
+                  retweets: "-",
+                  likes: "-",
+                  views: "-",
+                },
+              }}
+            />
           ))}
         </Feed>
       </Main>

@@ -1,5 +1,7 @@
-import styled from 'styled-components';
-import TweetCard from '../components/TweetCard';
+import styled from "styled-components";
+import { useEffect, useState } from "react";
+import { fetchTweets, postTweet } from "../api";
+import TweetCard from "../components/TweetCard";
 
 const NAV_WIDTH = 300;
 const RIGHTBAR_WIDTH = 350;
@@ -143,50 +145,92 @@ const TrendItem = styled.div`
 const dummyTweets = [
   {
     id: 1,
-    author: 'Elon Musk',
-    username: 'elonmusk',
-    avatar: 'https://abs.twimg.com/sticky/default_profile_images/default_profile_400x400.png',
+    author: "Elon Musk",
+    username: "elonmusk",
+    avatar:
+      "https://abs.twimg.com/sticky/default_profile_images/default_profile_400x400.png",
     content: `Just to reiterate: Tesla will spend well over $500M expanding our Supercharger network to create thousands of NEW chargers this year.
 
 That’s just on new sites and expansions, not counting operations costs, which are much higher.`,
     image: null,
-    stats: { replies: '3.8K', retweets: '7.9K', likes: '64K', views: '25M' }
+    stats: { replies: "3.8K", retweets: "7.9K", likes: "64K", views: "25M" },
   },
   {
     id: 2,
-    author: 'Elon Musk',
-    username: 'elonmusk',
-    avatar: 'https://abs.twimg.com/sticky/default_profile_images/default_profile_400x400.png',
+    author: "Elon Musk",
+    username: "elonmusk",
+    avatar:
+      "https://abs.twimg.com/sticky/default_profile_images/default_profile_400x400.png",
     content: `What Earth looks like in radio frequency from the @Starlink direct to phone satellites`,
-    image: 'https://news.samsungdisplay.com/wp-content/uploads/2018/08/8.jpg',
-    stats: { replies: '4.7K', retweets: '8.2K', likes: '98K', views: '29M' }
-  }
+    image: "https://news.samsungdisplay.com/wp-content/uploads/2018/08/8.jpg",
+    stats: { replies: "4.7K", retweets: "8.2K", likes: "98K", views: "29M" },
+  },
 ];
 
 const dummyTrends = [
-  { title: '싱크로유', posts: '12.7K posts' },
-  { title: '#스트레이키즈', posts: '223K posts' },
-  { title: '티켓 앙도', posts: '3,871 posts' },
-  { title: '#윤두준', posts: '8,094 posts' },
-  { title: '도경수 노래', posts: '' },
-  { title: '#아미들_남준이에게_돌아갈_걸심', posts: '111K posts' },
-  { title: '#규현더', posts: '' }
+  { title: "싱크로유", posts: "12.7K posts" },
+  { title: "#스트레이키즈", posts: "223K posts" },
+  { title: "티켓 앙도", posts: "3,871 posts" },
+  { title: "#윤두준", posts: "8,094 posts" },
+  { title: "도경수 노래", posts: "" },
+  { title: "#아미들_남준이에게_돌아갈_걸심", posts: "111K posts" },
+  { title: "#규현더", posts: "" },
 ];
 
 function HomePage() {
+  const [tweets, setTweets] = useState([]);
+  const [content, setContent] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [posting, setPosting] = useState(false);
+
+  // 트윗 목록 불러오기
+  useEffect(() => {
+    fetchTweets()
+      .then((data) => setTweets(data.tweets))
+      .catch((err) => alert(err.message || "트윗을 불러올 수 없습니다."))
+      .finally(() => setLoading(false));
+  }, []);
+
+  // 트윗 작성
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!content.trim()) return;
+    setPosting(true);
+    try {
+      // userId는 실제 로그인된 유저의 id로 교체 필요
+      const newTweet = await postTweet({ userId: 3, content });
+      setTweets((prev) => [newTweet, ...prev]);
+      setContent("");
+    } catch (err) {
+      alert(err.message || "트윗 등록 실패");
+    }
+    setPosting(false);
+  };
+
   return (
     <Layout>
       <Main>
         <Header>
-          <span style={{ borderBottom: '3px solid #1da1f2', paddingBottom: 6, marginRight: 20 }}>For you</span>
-          <span style={{ color: '#888', fontWeight: 400 }}>Following</span>
+          <span
+            style={{
+              borderBottom: "3px solid #1da1f2",
+              paddingBottom: 6,
+              marginRight: 20,
+            }}
+          >
+            For you
+          </span>
+          <span style={{ color: "#888", fontWeight: 400 }}>Following</span>
         </Header>
-        <TweetForm>
+        <TweetForm onSubmit={handleSubmit}>
           <TweetInputRow>
             <Avatar />
-            <div style={{ flex: 30 }}>
-              <TweetTextarea placeholder="무슨 일이 일어나고 있나요?" disabled />
-            </div>
+            <TweetTextarea
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              placeholder="무슨 일이 일어나고 있나요?"
+              disabled={posting}
+            />
           </TweetInputRow>
           <TweetActions>
             <ActionIcons>
@@ -197,30 +241,53 @@ function HomePage() {
               <span>📍</span>
               <span>⚙️</span>
             </ActionIcons>
-            <PostButton disabled>Post</PostButton>
+            <PostButton type="submit" disabled={posting || !content.trim()}>
+              {posting ? "Posting..." : "Post"}
+            </PostButton>
           </TweetActions>
         </TweetForm>
-        <Feed>
-          {dummyTweets.map(tweet => (
-            <TweetCard key={tweet.id} tweet={tweet} />
-          ))}
-        </Feed>
+        {loading ? (
+          <div style={{ color: "#fff", padding: 20 }}>로딩중...</div>
+        ) : (
+          tweets.map((tweet) => (
+            <TweetCard
+              key={tweet.tweetId}
+              tweet={{
+                id: tweet.tweetId,
+                author: tweet.userName,
+                username: tweet.userName,
+                avatar:
+                  "https://abs.twimg.com/sticky/default_profile_images/default_profile_400x400.png",
+                content: tweet.content,
+                image: null,
+                stats: {
+                  replies: "-",
+                  retweets: "-",
+                  likes: "-",
+                  views: "-",
+                },
+                createdAt: tweet.createdAt,
+              }}
+            />
+          ))
+        )}
       </Main>
       <RightBar>
         <SearchInput placeholder="Search" disabled />
         <Card>
           <CardTitle>Subscribe to Premium</CardTitle>
           <div style={{ fontSize: 15, marginBottom: 10 }}>
-            Subscribe to unlock new features and if eligible, receive a share of ads revenue.
+            Subscribe to unlock new features and if eligible, receive a share of
+            ads revenue.
           </div>
-          <PostButton style={{ width: '100%' }}>Subscribe</PostButton>
+          <PostButton style={{ width: "100%" }}>Subscribe</PostButton>
         </Card>
         <Card>
           <CardTitle>Trends for you</CardTitle>
           {dummyTrends.map((trend, idx) => (
             <TrendItem key={idx}>
               <div style={{ fontWeight: 500 }}>{trend.title}</div>
-              <div style={{ color: '#888', fontSize: 13 }}>{trend.posts}</div>
+              <div style={{ color: "#888", fontSize: 13 }}>{trend.posts}</div>
             </TrendItem>
           ))}
         </Card>

@@ -1,6 +1,7 @@
-import styled from 'styled-components';
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // 추가
+import styled from "styled-components";
+import { useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { fetchTweetDetail, deleteTweet } from "../api";
 
 const NAV_WIDTH = 300;
 const RIGHTBAR_WIDTH = 350;
@@ -200,76 +201,47 @@ const ModalBtn = styled.button`
   &:hover { opacity: 0.9; }
 `;
 
-const dummyTweet = {
-  id: 1,
-  author: '김윤지',
-  username: 'efub_5th_toy',
-  avatar: 'https://abs.twimg.com/sticky/default_profile_images/default_profile_400x400.png',
-  content: '내 트윗 1',
-  date: '12:00 PM · May 23, 2025',
-};
-
-const dummyTrends = [
-  { title: '싱크로유', posts: '12.7K posts' },
-  { title: '#스트레이키즈', posts: '223K posts' },
-  { title: '티켓 양도', posts: '3,871 posts' },
-  { title: '#윤두준', posts: '8,094 posts' },
-  { title: '도경수 노래', posts: '' },
-  { title: '#아미들_남준이에게_돌아갈_걸심', posts: '111K posts' },
-  { title: '#규현디엠', posts: '' }
-];
-
 function TweetDetailPage() {
-  const [showModal, setShowModal] = useState(false);
-  const navigate = useNavigate(); // 추가
+  const { id } = useParams();
+  const [tweet, setTweet] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchTweetDetail(id)
+      .then(setTweet)
+      .catch((err) => alert(err.message || "트윗을 불러올 수 없습니다."))
+      .finally(() => setLoading(false));
+  }, [id]);
+
+  // 트윗 삭제 예시 (비밀번호 입력 등은 별도 구현 필요)
+  // const handleDelete = async () => {
+  //   try {
+  //     await deleteTweet({ tweetId: id, userId: 1, password: "비밀번호" });
+  //     // 삭제 후 이동 등 처리
+  //   } catch (err) {
+  //     alert(err.message || "삭제 실패");
+  //   }
+  // };
+
+  if (loading) return <div style={{ color: "#fff", padding: 20 }}>로딩중...</div>;
+  if (!tweet) return <div style={{ color: "#fff", padding: 20 }}>트윗 없음</div>;
 
   return (
     <Layout>
       <Main>
-        <Header>
-          <button
-            style={{
-              background: 'none',
-              border: 'none',
-              color: '#fff',
-              cursor: 'pointer',
-              fontSize: 22,
-              padding: 0,
-              marginRight: 10,
-            }}
-            onClick={() => navigate('/')}
-            aria-label="홈으로"
-          >
-            ←
-          </button>
-          Post
-        </Header>
+        <Header>Tweet</Header>
         <TweetCard>
-          <Avatar src={dummyTweet.avatar} alt="avatar" />
           <AuthorRow>
-            {dummyTweet.author}
-            <Username>@{dummyTweet.username}</Username>
+            <Avatar src="https://abs.twimg.com/sticky/default_profile_images/default_profile_400x400.png" />
+            <div>{tweet.userName}</div>
+            <Username>@{tweet.userName}</Username>
           </AuthorRow>
-          <MoreBtn onClick={() => setShowModal(true)} aria-label="더보기">...</MoreBtn>
-          <TweetContent>{dummyTweet.content}</TweetContent>
-          <div style={{ color: '#1da1f2', fontSize: 14, cursor: 'pointer', marginBottom: 2 }}>Translate post</div>
-          <TweetMeta>{dummyTweet.date}</TweetMeta>
-          <div style={{ borderTop: '1px solid #222', margin: '10px 0 0 0', paddingTop: 8, color: '#888', fontSize: 14 }}>
-            <span>📊 View post engagements</span>
-          </div>
-          <TweetActions>
-            <span>💬</span>
-            <span>🔁</span>
-            <span>❤️</span>
-            <span>🔖</span>
-            <span>↗️</span>
-          </TweetActions>
+          <TweetContent>{tweet.content}</TweetContent>
+          <TweetMeta>
+            {new Date(tweet.createdAt).toLocaleString()}
+          </TweetMeta>
+          {/* <MoreBtn onClick={handleDelete}>삭제</MoreBtn> */}
         </TweetCard>
-        <ReplyBox>
-          <Avatar src={dummyTweet.avatar} alt="avatar" />
-          <ReplyInput placeholder="Post your reply" disabled />
-          <ReplyButton disabled>Reply</ReplyButton>
-        </ReplyBox>
       </Main>
       <RightBar>
         <SearchInput placeholder="Search" disabled />
